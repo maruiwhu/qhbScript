@@ -1,0 +1,2 @@
+# qhbScript
+monitor red count
