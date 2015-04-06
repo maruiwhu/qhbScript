@@ -8,17 +8,18 @@ import traceback
 from time import sleep
 import sys
 import thread 
+import threading
 
-
+mylock = threading.RLock()  
 ISOTIMEFORMAT='%Y-%m-%d %X'
 lopper = True
 headers = {"X-Forwarded-For":"10.0.0.1"}
-string1 = "总数：".decode("utf-8").encode("gbk")
-string2 = "总投入：".decode("utf-8").encode("gbk")
-string3 = "单次投入：".decode("utf-8").encode("gbk")
-string4 = "兑奖中".decode("utf-8").encode("gbk")
-string5 = "大团".decode("utf-8").encode("gbk")
-string6 = "小团".decode("utf-8").encode("gbk")
+string1 = "总数：".decode("utf-8").encode("utf-8")
+string2 = "总投入：".decode("utf-8").encode("utf-8")
+string3 = "单次投入：".decode("utf-8").encode("utf-8")
+string4 = "兑奖中".decode("utf-8").encode("utf-8")
+string5 = "大团".decode("utf-8").encode("utf-8")
+string6 = "小团".decode("utf-8").encode("utf-8")
 
 def monitor(owenId,index,sEcho):
 	url = 'http://qhb.qbao.com/ajax/listGroup.html'
@@ -113,21 +114,23 @@ def qhbCount(num):
             firstCount =nowCount
         if(lastCount ==0):
             lastCount =nowCount
+	mylock.acquire()
         totalCount = firstCount - nowCount
         preCount = lastCount -nowCount
         lastCount = nowCount
         print string1+str(nowCount)+string2+str(totalCount)+string3+str(preCount)
+	mylock.release()  
 	thread.exit_thread() 
 
 #850793#3956218#818109
-array = ["850793","818109","130877"]
+array = ["850793","177718","130877","3392236","1419392","5462407"]
 lastCount = 0
 firstCount = 0
 while lopper:
 	try:
 	    for i in range(len(array)):
 		thread.start_new_thread(monitor,(array[i],0,1))
-		thread.start_new_thread(monitor,(array[i],10,2))
+		#thread.start_new_thread(monitor,(array[i],10,2))
 	    thread.start_new_thread(qhbCount,(1,))
 	    sleep(0.5)
 	except Exception,ex:
